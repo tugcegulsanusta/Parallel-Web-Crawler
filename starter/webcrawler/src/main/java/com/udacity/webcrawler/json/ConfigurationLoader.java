@@ -32,13 +32,24 @@ public final class ConfigurationLoader {
    */
   public CrawlerConfiguration load() {
     // DONE: read JSON string from a file Path, pass to string to the reader. Don't forget to close the file.
-   try {
-     BufferedReader reader = Files.newBufferedReader(this.path,StandardCharsets.UTF_8);
-     reader.close();
+      BufferedReader reader = null;
+      try {
+      reader = Files.newBufferedReader(this.path,StandardCharsets.UTF_8);
+
      return read(reader);
 
    }catch (IOException e){
        throw new RuntimeException(e);
+   }finally {
+          try {
+              if(reader!=null){
+                  reader.close();
+              }
+          }catch ( Exception e){
+              e.printStackTrace();
+          }
+
+
    }
   }
   /**
