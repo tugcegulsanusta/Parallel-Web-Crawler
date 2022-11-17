@@ -14,6 +14,8 @@ import javax.inject.Inject;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class WebCrawlerMain {
 
@@ -35,21 +37,41 @@ public final class WebCrawlerMain {
     CrawlResult result = crawler.crawl(config.getStartPages());
     CrawlResultWriter resultWriter = new CrawlResultWriter(result);
     // DONE: Write the crawl results to a JSON file (or System.out if the file name is empty)
-    if (config.getResultPath()!=null && !config.getResultPath().trim().isEmpty()){
+
+    writeAlternatively( config.getResultPath(), resultWriter::write,
+            resultWriter::write,  new OutputStreamWriter(System.out) );
+
+    // TODO: Write the profile data to a text file (or System.out if the file name is empty)
+    Consumer<Path> pathWriter = path -> {
       try {
-        Path resultPath = Path.of(config.getResultPath());
-        resultWriter.write(resultPath);
+        profiler.writeData(path);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    };
+    Consumer<Writer> writerWriter = writer -> {
+      try {
+        profiler.writeData(writer);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    };
+    writeAlternatively( config.getProfileOutputPath(),pathWriter, writerWriter ,  new OutputStreamWriter(System.out) );
+
+  }
+
+  private void writeAlternatively (String path, Consumer<Path> pathWriter,
+                                   Consumer<Writer> writerWriter, Writer pathEmptyWriter){
+    if (path!=null && !path.trim().isEmpty()){
+      try {
+        Path resultPath = Path.of(path);
+        pathWriter.accept(resultPath);
       }catch (Exception e){
-        System.err.println("config.getResultPath() is "+config.getResultPath());
         throw e;
       }
     }else{
-      OutputStreamWriter outputStreamWriter = new OutputStreamWriter(System.out);
-      resultWriter.write(outputStreamWriter);
+      writerWriter.accept(pathEmptyWriter);
     }
-
-
-    // TODO: Write the profile data to a text file (or System.out if the file name is empty)
   }
 
   public static void main(String[] args) throws Exception {
