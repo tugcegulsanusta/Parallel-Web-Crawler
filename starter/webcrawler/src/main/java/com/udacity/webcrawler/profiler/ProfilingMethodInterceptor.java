@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -44,6 +45,8 @@ final class ProfilingMethodInterceptor implements InvocationHandler {
         returnResult = method.invoke(this.delegate,args);
       }  catch (InvocationTargetException e) {
         throw e.getTargetException();
+      }catch (IllegalAccessException e){
+        throw new RuntimeException(e);
       }finally {
         Instant end = clock.instant();
         state.record(delegate.getClass(), method,  Duration.between(start, end) );

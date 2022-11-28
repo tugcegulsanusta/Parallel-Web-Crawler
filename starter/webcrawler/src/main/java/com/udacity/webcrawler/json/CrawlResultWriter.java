@@ -10,6 +10,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 
 /**
@@ -38,7 +39,7 @@ public final class CrawlResultWriter {
     // DONE: Fill in this method.
     BufferedWriter writer = null;
     try {
-      writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
+      writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8, StandardOpenOption.CREATE);
       write(writer);
 
     }catch (IOException e){

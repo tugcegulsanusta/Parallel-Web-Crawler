@@ -71,6 +71,11 @@ public final class WebCrawlerMain {
       }
     }else{
       writerWriter.accept(pathEmptyWriter);
+      try {
+        pathEmptyWriter.close();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 
