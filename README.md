@@ -1,5 +1,4 @@
-# Parallel-Web-Crawler
-Udacity
+
 # Project: Parallel Web Crawler
 
 ![UdaciSearch Logo](UdaciSearch.png)
